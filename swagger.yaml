@@ -1,0 +1,96 @@
+openapi: 3.0.3
+info:
+  title: Cost Sync API
+  version: 1.0.0
+  description: API for user registration, login, logout, and health check.
+servers:
+  - url: http://localhost:5000
+paths:
+  /register:
+    post:
+      summary: Register a new user
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '201':
+          description: User registered successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user_id:
+                    type: integer
+        '400':
+          description: Username and password required
+        '409':
+          description: User already exists
+  /login:
+    post:
+      summary: Login and receive a token
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        '200':
+          description: Login successful
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '401':
+          description: Invalid credentials
+  /logout:
+    post:
+      summary: Logout the current user
+      responses:
+        '200':
+          description: Logged out successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+  /ping:
+    get:
+      summary: Health check endpoint
+      responses:
+        '200':
+          description: Server is live
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
