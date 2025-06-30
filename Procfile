@@ -1,1 +1,1 @@
-web: bash -c "echo '=== Running migration ===' && flask db upgrade && echo '=== Starting Gunicorn ===' && gunicorn -w 4 -b 0.0.0.0:10000 app:app"
+web: bash -c "echo '=== Running migration ===' && flask db upgrade && echo '=== Starting Gunicorn ===' && gunicorn -w 4 -b 0.0.0.0:10000 main:app"
