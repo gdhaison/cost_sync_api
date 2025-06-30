@@ -17,9 +17,13 @@ def create_app():
     app.config['JWT_SECRET_KEY'] = os.getenv('JWT_SECRET_KEY', 'superjwtsecret')
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour in seconds
 
+
+    print("Flag - DATABASE_URL:", app.config['SQLALCHEMY_DATABASE_URI'])
+
     db.init_app(app)
     migrate.init_app(app, db)
     jwt = JWTManager(app)
+
 
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp)

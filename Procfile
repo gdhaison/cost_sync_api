@@ -1,1 +1,1 @@
-web: bash -c "flask db upgrade && gunicorn -w 4 -b 0.0.0.0:$PORT app:app"
+web: bash -c "flask db upgrade && gunicorn -w 4 -b 0.0.0.0:10000 app:app"
