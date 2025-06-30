@@ -8,7 +8,10 @@ RUN pip install --no-cache-dir -r requirements.txt
 
 COPY . .
 
-ENV FLASK_APP=app
-ENV FLASK_RUN_HOST=0.0.0.0
+ENV PYTHONPATH=/app
 
-CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:10000", "app:app"]
+ENV PYTHONUNBUFFERED=1
+
+ENV FLASK_APP=main.py
+
+CMD bash -c "echo '=== Running migration ===' && flask db upgrade && echo '=== Starting Gunicorn ===' && gunicorn -w 4 -b 0.0.0.0:10000 main:app"
