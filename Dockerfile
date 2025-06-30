@@ -11,4 +11,4 @@ COPY . .
 ENV FLASK_APP=app
 ENV FLASK_RUN_HOST=0.0.0.0
 
-CMD ["flask", "run"]
+CMD ["gunicorn", "-w", "4", "-b", "0.0.0.0:10000", "app:app"]
