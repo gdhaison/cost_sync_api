@@ -27,6 +27,14 @@ def create_app():
 
     from .routes.auth import auth_bp
     app.register_blueprint(auth_bp)
+    from .routes.club import club_bp
+    app.register_blueprint(club_bp)
+    from .routes.meeting import meeting_bp
+    app.register_blueprint(meeting_bp)
+    from .routes.user_club import user_club_bp
+    app.register_blueprint(user_club_bp)
+    from .routes.user_meeting import user_meeting_bp
+    app.register_blueprint(user_meeting_bp)
 
     from . import models
 
