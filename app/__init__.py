@@ -4,6 +4,8 @@ from flask_migrate import Migrate
 from dotenv import load_dotenv
 from flask_jwt_extended import JWTManager
 import os
+import logging
+
 
 load_dotenv()
 db = SQLAlchemy()
@@ -18,7 +20,30 @@ def create_app():
     app.config['JWT_ACCESS_TOKEN_EXPIRES'] = 3600  # 1 hour in seconds
 
 
-    print("Flag - DATABASE_URL:", app.config['SQLALCHEMY_DATABASE_URI'])
+    # ---------- CẤU HÌNH LOG ----------
+    logging.basicConfig(
+        level=logging.INFO,
+        stream=sys.stdout,
+        format="%(asctime)s [%(levelname)s] %(message)s",
+        datefmt="%Y-%m-%d %H:%M:%S",
+    )
+    logger = logging.getLogger("app_logger")
+
+    # ---------- LOG MỌI REQUEST ----------
+    @app.before_request
+    def start_timer():
+        request._start_time = logging.Formatter.formatTime(logging.Formatter(), None)
+
+    @app.after_request
+    def log_request(response):
+        logger.info(f"{request.remote_addr} - {request.method} {request.path} - {response.status_code}")
+        return response
+
+    # ---------- LOG LỖI RIÊNG ----------
+    @app.errorhandler(Exception)
+    def handle_exception(e):
+        logger.exception(f"🔥 Exception occurred: {e}")
+        return {"error": "Internal Server Error"}, 500
 
     db.init_app(app)
     migrate.init_app(app, db)
