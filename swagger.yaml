@@ -18,10 +18,17 @@ paths:
               properties:
                 username:
                   type: string
+                login_id:
+                  type: string
+                  description: Email or mobile phone number
+                login_id_type:
+                  type: string
+                  enum: [email, mobile]
                 password:
                   type: string
               required:
-                - username
+                - login_id
+                - login_id_type
                 - password
       responses:
         '201':
@@ -36,12 +43,12 @@ paths:
                   user_id:
                     type: integer
         '400':
-          description: Username and password required
+          description: login_id, login_id_type, and password required
         '409':
-          description: User already exists
+          description: login_id already exists
   /login:
     post:
-      summary: Login and receive a token
+      summary: Login and receive a JWT token
       requestBody:
         required: true
         content:
@@ -49,12 +56,13 @@ paths:
             schema:
               type: object
               properties:
-                username:
+                login_id:
                   type: string
+                  description: Email or mobile phone number
                 password:
                   type: string
               required:
-                - username
+                - login_id
                 - password
       responses:
         '200':
@@ -65,6 +73,8 @@ paths:
                 type: object
                 properties:
                   message:
+                    type: string
+                  access_token:
                     type: string
         '401':
           description: Invalid credentials
@@ -94,3 +104,647 @@ paths:
                 properties:
                   message:
                     type: string
+  /clubs:
+    get:
+      summary: List all clubs
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of clubs
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Club'
+    post:
+      summary: Create a new club
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubCreate'
+      responses:
+        '201':
+          description: Club created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+  /clubs/{club_id}:
+    get:
+      summary: Get a club by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Club details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+        '404':
+          description: Club not found
+    put:
+      summary: Update a club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ClubCreate'
+      responses:
+        '200':
+          description: Club updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Club'
+        '404':
+          description: Club not found
+    delete:
+      summary: Delete a club
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: club_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Club deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Club not found
+  /meetings:
+    get:
+      summary: List all meetings
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of meetings
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Meeting'
+    post:
+      summary: Create a new meeting
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingCreate'
+      responses:
+        '201':
+          description: Meeting created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+  /meetings/{meeting_id}:
+    get:
+      summary: Get a meeting by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Meeting details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '404':
+          description: Meeting not found
+    put:
+      summary: Update a meeting
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MeetingCreate'
+      responses:
+        '200':
+          description: Meeting updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Meeting'
+        '404':
+          description: Meeting not found
+    delete:
+      summary: Delete a meeting
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: meeting_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Meeting deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Meeting not found
+  /user_clubs:
+    get:
+      summary: List all user-club associations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of user-club associations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserClub'
+    post:
+      summary: Create a user-club association
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserClubCreate'
+      responses:
+        '201':
+          description: User-club association created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserClub'
+  /user_clubs/{user_club_id}:
+    get:
+      summary: Get a user-club association by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_club_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: User-club association details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserClub'
+        '404':
+          description: UserClub not found
+    put:
+      summary: Update a user-club association
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_club_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserClubCreate'
+      responses:
+        '200':
+          description: User-club association updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserClub'
+        '404':
+          description: UserClub not found
+    delete:
+      summary: Delete a user-club association
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_club_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: UserClub deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: UserClub not found
+  /user_meetings:
+    get:
+      summary: List all user-meeting associations
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of user-meeting associations
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/UserMeeting'
+    post:
+      summary: Create a user-meeting association
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserMeetingCreate'
+      responses:
+        '201':
+          description: User-meeting association created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeeting'
+  /user_meetings/{user_meeting_id}:
+    get:
+      summary: Get a user-meeting association by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_meeting_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: User-meeting association details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeeting'
+        '404':
+          description: UserMeeting not found
+    put:
+      summary: Update a user-meeting association
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_meeting_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/UserMeetingCreate'
+      responses:
+        '200':
+          description: User-meeting association updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/UserMeeting'
+        '404':
+          description: UserMeeting not found
+    delete:
+      summary: Delete a user-meeting association
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: user_meeting_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: UserMeeting deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: UserMeeting not found
+  /media:
+    get:
+      summary: List all media
+      security:
+        - bearerAuth: []
+      responses:
+        '200':
+          description: List of media
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Media'
+    post:
+      summary: Upload media (metadata only)
+      security:
+        - bearerAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaCreate'
+      responses:
+        '201':
+          description: Media created
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+  /media/{media_id}:
+    get:
+      summary: Get media by ID
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: media_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Media details
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '404':
+          description: Media not found
+    put:
+      summary: Update media (metadata only)
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: media_id
+          schema:
+            type: integer
+          required: true
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/MediaCreate'
+      responses:
+        '200':
+          description: Media updated
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Media'
+        '404':
+          description: Media not found
+    delete:
+      summary: Delete media
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: media_id
+          schema:
+            type: integer
+          required: true
+      responses:
+        '200':
+          description: Media deleted
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+        '404':
+          description: Media not found
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT
+  schemas:
+    Club:
+      type: object
+      properties:
+        id:
+          type: integer
+        name:
+          type: string
+        description:
+          type: string
+    ClubCreate:
+      type: object
+      properties:
+        name:
+          type: string
+        description:
+          type: string
+      required:
+        - name
+    Meeting:
+      type: object
+      properties:
+        id:
+          type: integer
+        club_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        recurrence:
+          type: string
+        created_at:
+          type: string
+          format: date-time
+        updated_at:
+          type: string
+          format: date-time
+    MeetingCreate:
+      type: object
+      properties:
+        club_id:
+          type: integer
+        title:
+          type: string
+        description:
+          type: string
+        start_time:
+          type: string
+          format: date-time
+        end_time:
+          type: string
+          format: date-time
+        recurrence:
+          type: string
+      required:
+        - club_id
+        - title
+        - start_time
+    UserClub:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        club_id:
+          type: integer
+        joined_at:
+          type: string
+          format: date-time
+    UserClubCreate:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        club_id:
+          type: integer
+      required:
+        - user_id
+        - club_id
+    UserMeeting:
+      type: object
+      properties:
+        id:
+          type: integer
+        user_id:
+          type: integer
+        meeting_id:
+          type: integer
+        joined_at:
+          type: string
+          format: date-time
+    UserMeetingCreate:
+      type: object
+      properties:
+        user_id:
+          type: integer
+        meeting_id:
+          type: integer
+      required:
+        - user_id
+        - meeting_id
+    Media:
+      type: object
+      properties:
+        id:
+          type: integer
+        filename:
+          type: string
+        file_type:
+          type: string
+        url:
+          type: string
+        uploaded_at:
+          type: string
+          format: date-time
+        user_id:
+          type: integer
+        meeting_id:
+          type: integer
+        club_id:
+          type: integer
+    MediaCreate:
+      type: object
+      properties:
+        filename:
+          type: string
+        file_type:
+          type: string
+        url:
+          type: string
+        user_id:
+          type: integer
+        meeting_id:
+          type: integer
+        club_id:
+          type: integer
+      required:
+        - filename
+        - file_type
+        - url

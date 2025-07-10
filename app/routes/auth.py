@@ -11,20 +11,22 @@ auth_bp = Blueprint('auth', __name__)
 def register():
     data = request.get_json()
     username = data.get('username')
+    login_id = data.get('login_id')
+    login_id_type = data.get('login_id_type')  # 'email' or 'mobile'
     password = data.get('password')
-    if not username or not password:
-        return jsonify({'error': 'Username and password required'}), 400
-    if UserRepository.get_by_username(username):
-        return jsonify({'error': 'User already exists'}), 409
-    user = UserRepository.create_user(username, password)
+    if not login_id or not login_id_type or not password:
+        return jsonify({'error': 'login_id, login_id_type, and password required'}), 400
+    if UserRepository.get_by_login_id(login_id):
+        return jsonify({'error': 'login_id already exists'}), 409
+    user = UserRepository.create_user(username=username, login_id=login_id, login_id_type=login_id_type, password=password)
     return jsonify({'message': 'User registered successfully', 'user_id': user.id}), 201
 
 @auth_bp.route('/login', methods=['POST'])
 def login():
     data = request.get_json()
-    username = data.get('username')
+    login_id = data.get('login_id')
     password = data.get('password')
-    user = UserRepository.get_by_username(username)
+    user = UserRepository.get_by_login_id(login_id)
     if user and user.check_password(password):
         session['user_id'] = user.id
         access_token = create_access_token(identity=user.id)

@@ -3,8 +3,12 @@
     "_postman_id": "cost-sync-api-collection",
     "name": "Cost Sync API",
     "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
-    "description": "Collection for Cost Sync API endpoints."
+    "description": "Collection for Cost Sync API endpoints with JWT authentication."
   },
+  "variable": [
+    { "key": "url", "value": "http://localhost:5000" },
+    { "key": "token", "value": "" }
+  ],
   "item": [
     {
       "name": "Register",
@@ -15,13 +19,11 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+          "raw": "{\n  \"username\": \"testuser\",\n  \"login_id\": \"test@example.com\",\n  \"login_id_type\": \"email\",\n  \"password\": \"password123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/register",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
+          "raw": "{{url}}/register",
+          "host": ["{{url}}"],
           "path": ["register"]
         }
       }
@@ -35,29 +37,39 @@
         ],
         "body": {
           "mode": "raw",
-          "raw": "{\n  \"username\": \"testuser\",\n  \"password\": \"testpass\"\n}"
+          "raw": "{\n  \"login_id\": \"test@example.com\",\n  \"login_id_type\": \"email\",\n  \"password\": \"password123\"\n}"
         },
         "url": {
-          "raw": "http://localhost:5000/login",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
+          "raw": "{{url}}/login",
+          "host": ["{{url}}"],
           "path": ["login"]
         }
-      }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "exec": [
+              "var jsonData = pm.response.json();",
+              "if (jsonData.access_token) {",
+              "    pm.environment.set(\"token\", jsonData.access_token);",
+              "}"
+            ],
+            "type": "text/javascript"
+          }
+        }
+      ]
     },
     {
       "name": "Logout",
       "request": {
         "method": "POST",
         "header": [
-          { "key": "Content-Type", "value": "application/json" }
+          { "key": "Authorization", "value": "Bearer {{token}}" }
         ],
         "url": {
-          "raw": "http://localhost:5000/logout",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
+          "raw": "{{url}}/logout",
+          "host": ["{{url}}"],
           "path": ["logout"]
         }
       }
@@ -66,12 +78,159 @@
       "name": "Ping",
       "request": {
         "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
         "url": {
-          "raw": "http://localhost:5000/ping",
-          "protocol": "http",
-          "host": ["localhost"],
-          "port": "5000",
+          "raw": "{{url}}/ping",
+          "host": ["{{url}}"],
           "path": ["ping"]
+        }
+      }
+    },
+    {
+      "name": "List Clubs",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{url}}/clubs/",
+          "host": ["{{url}}"],
+          "path": ["clubs", ""]
+        }
+      }
+    },
+    {
+      "name": "Create Club",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Chess Club\",\n  \"description\": \"A club for chess lovers\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/clubs/",
+          "host": ["{{url}}"],
+          "path": ["clubs", ""]
+        }
+      }
+    },
+    {
+      "name": "List Meetings",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{url}}/meetings/",
+          "host": ["{{url}}"],
+          "path": ["meetings", ""]
+        }
+      }
+    },
+    {
+      "name": "Create Meeting",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"club_id\": 1,\n  \"title\": \"Weekly Sync\",\n  \"start_time\": \"2025-07-01T10:00:00\",\n  \"recurrence\": \"weekly\"\n}"
+        },
+        "url": {
+          "raw": "{{url}}/meetings/",
+          "host": ["{{url}}"],
+          "path": ["meetings", ""]
+        }
+      }
+    },
+    {
+      "name": "List User Clubs",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{url}}/user_clubs/",
+          "host": ["{{url}}"],
+          "path": ["user_clubs", ""]
+        }
+      }
+    },
+    {
+      "name": "Create User Club",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"club_id\": 1\n}"
+        },
+        "url": {
+          "raw": "{{url}}/user_clubs/",
+          "host": ["{{url}}"],
+          "path": ["user_clubs", ""]
+        }
+      }
+    },
+    {
+      "name": "List User Meetings",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{url}}/user_meetings/",
+          "host": ["{{url}}"],
+          "path": ["user_meetings", ""]
+        }
+      }
+    },
+    {
+      "name": "Create User Meeting",
+      "request": {
+        "method": "POST",
+        "header": [
+          { "key": "Content-Type", "value": "application/json" },
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"user_id\": 1,\n  \"meeting_id\": 1\n}"
+        },
+        "url": {
+          "raw": "{{url}}/user_meetings/",
+          "host": ["{{url}}"],
+          "path": ["user_meetings", ""]
+        }
+      }
+    },
+    {
+      "name": "List Media",
+      "request": {
+        "method": "GET",
+        "header": [
+          { "key": "Authorization", "value": "Bearer {{token}}" }
+        ],
+        "url": {
+          "raw": "{{url}}/media/",
+          "host": ["{{url}}"],
+          "path": ["media", ""]
         }
       }
     }

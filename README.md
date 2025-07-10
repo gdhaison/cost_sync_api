@@ -39,8 +39,8 @@ This project is a Flask-based REST API using PostgreSQL and the repository patte
 3. Update your application to use the `DATABASE_URL` environment variable for the database connection string.
 
 ## API Endpoints
-- `POST /register` - Register a new user
-- `POST /login` - Login and receive a token
+- `POST /register` - Register a new user (fields: username, login_id, login_id_type, password)
+- `POST /login` - Login with login_id (email or mobile) and password, receive a JWT token
 - `POST /logout` - Logout the current user
 - `GET /ping` - Health check, returns 'pong' if the server is live
 
