@@ -29,10 +29,10 @@ def create_app():
     )
     logger = logging.getLogger("app_logger")
 
-    # ---------- LOG MỌI REQUEST ----------
-    @app.before_request
-    def start_timer():
-        request._start_time = logging.Formatter.formatTime(logging.Formatter(), None)
+    # # ---------- LOG MỌI REQUEST ----------
+    # @app.before_request
+    # def start_timer():
+    #     request._start_time = logging.Formatter.formatTime(logging.Formatter(), None)
 
     @app.after_request
     def log_request(response):
