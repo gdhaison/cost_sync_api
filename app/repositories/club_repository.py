@@ -4,7 +4,7 @@ from app import db
 class ClubRepository:
     @staticmethod
     def create(name, user_id,description=None):
-        club = Club(user_id, name=name,description=description)
+        club = Club(name=name, user_id=user_id, description=description)
         db.session.add(club)
         db.session.commit()
         return club
