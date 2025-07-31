@@ -5,7 +5,10 @@ app = create_app()
 
 CORS(
     app,
-    resources={r"/*": {"origins": "http://localhost:3000"}},
+    resources={r"/*": {"origins": [
+        "http://localhost:3000",
+        "https://cost-sync-ui.onrender.com"
+    ]}},
     supports_credentials=True,
     allow_headers=["Content-Type", "Authorization"],
     expose_headers=["Authorization"]
