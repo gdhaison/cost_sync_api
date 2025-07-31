@@ -60,6 +60,8 @@ def create_app():
     app.register_blueprint(user_club_bp)
     from .routes.user_meeting import user_meeting_bp
     app.register_blueprint(user_meeting_bp)
+    from .routes.user import user_bp
+    app.register_blueprint(user_bp)
 
     from . import models
 
